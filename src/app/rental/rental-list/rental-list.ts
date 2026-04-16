@@ -16,6 +16,10 @@ import { FormsModule } from '@angular/forms';
 import { Pageable } from '../../core/model/page/Pageable';
 import { RentalEdit } from '../rental-edit/rental-edit';
 import { DialogConfirmationComponent } from '../../core/dialog-confirmation/dialog-confirmation';
+import { Game } from '../../game/model/game';
+import { Client } from '../../client/model/client';
+import { GameService } from '../../game/game';
+import { ClientService } from '../../client/client';
 
 
 @Component({
@@ -37,6 +41,11 @@ import { DialogConfirmationComponent } from '../../core/dialog-confirmation/dial
   styleUrl: './rental-list.scss',
 })
 export class RentalListComponent implements OnInit {
+  games: Game[];
+  clients: Client[];
+  filterGame: Game;
+  filterClient: Client;
+  filterDate: Date
 
   pageNumber: number = 0;
   pageSize: number = 5;
@@ -46,12 +55,38 @@ export class RentalListComponent implements OnInit {
   displayedColumns: string[] = ['id', 'game', 'client', 'rentalDate', 'returnDate', 'action'];
 
   constructor(
+    private gameService: GameService,
+    private clientService: ClientService,
     private rentalService: RentalService,
     public dialog: MatDialog,
   ) { }
 
   ngOnInit(): void {
+    this.gameService.getGames().subscribe((games) => (this.games = games));
+    this.clientService.getClients().subscribe((clients) => (this.clients = clients));
+    
     this.loadPage();
+  }
+
+  onCleanFilter(): void {
+    this.filterGame = null;
+    this.filterClient = null;
+    this.filterDate = null;
+    this.onSearch();
+  }
+
+  onSearch(): void {
+    const gameId =
+    this.filterGame != null ? this.filterGame.id : null;
+
+    const clientId =
+    this.filterClient != null ? this.filterClient.id : null;
+
+    const inputDate =
+    this.filterDate != null ? this.filterDate.getDate : null;
+
+    this.rentalService.getRental(gameId, clientId, inputDate).subscribe((rentals) => (this.rentals = rentals));
+
   }
 
   loadPage(event?: PageEvent) {
