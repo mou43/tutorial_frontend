@@ -17,6 +17,8 @@ export class RentalService {
     return this.http.post<RentalPage>(this.baseUrl, { pageable: pageable });
   }
 
+  /*
+
   saveRental(rental: Rental): Observable<Rental> {
     const { id } = rental;
     const url = id ? `${this.baseUrl}/${id}` : this.baseUrl;
@@ -31,6 +33,6 @@ export class RentalService {
   getAllRental(): Observable<Rental[]> {
     return this.http.get<Rental[]>(this.baseUrl);
   }
-
+*/
 
 }
