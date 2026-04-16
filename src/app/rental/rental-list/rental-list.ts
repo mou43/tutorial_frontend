@@ -7,7 +7,15 @@ import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { FormsModule } from '@angular/forms';
 import { Pageable } from '../../core/model/page/Pageable';
+import { RentalEdit } from '../rental-edit/rental-edit';
+import { DialogConfirmationComponent } from '../../core/dialog-confirmation/dialog-confirmation';
 
 
 @Component({
@@ -17,7 +25,13 @@ import { Pageable } from '../../core/model/page/Pageable';
     MatIconModule,
     MatTableModule,
     CommonModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    FormsModule
   ],
   templateUrl: './rental-list.html',
   styleUrl: './rental-list.scss',
@@ -65,7 +79,41 @@ export class RentalListComponent implements OnInit {
     });
   }
 
-  
+  createRental() {
+    const dialogRef = this.dialog.open(RentalEdit, {
+      data: {},
+    });
 
+    dialogRef.afterClosed().subscribe((result) => {
+      this.ngOnInit();
+    });
+  }
 
+  editRental(rental: Rental) {
+    const dialogRef = this.dialog.open(RentalEdit, {
+      data: {rental: rental},
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      this.ngOnInit();
+    });
+  }
+
+  deleteRental(rental: Rental) {
+    const dialogRef = this.dialog.open(DialogConfirmationComponent, {
+      data: {
+        title: 'Eliminar préstamo',
+        description:
+          'Atención si borra el préstamos se perderán sus datos.<br> ¿Desea eliminar el préstamo?',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.rentalService.deleteRental(rental.id).subscribe((result) => {
+          this.ngOnInit();
+        });
+      }
+    });
+  }
 }

@@ -23,7 +23,7 @@
 
             <mat-form-field>
                 <mat-label>Fecha</mat-label>
-                <input matInput [matDatapicker]="picker" [(ngModel)]="filterDate" name="date">
+                <input matInput [matDatepicker]="picker" [(ngModel)]="filterDate" name="date">
                 <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                 <mat-datepicker #picker></mat-datepicker>
             </mat-form-field>
@@ -53,12 +53,12 @@
 
         <ng-container matColumnDef="rentalDate">
             <mat-header-cell *matHeaderCellDef> Fecha de préstamo </mat-header-cell>
-            <mat-cell *matCellDef="let rental"> {{rental.rentalDate}} </mat-cell>
+            <mat-cell *matCellDef="let rental"> {{rental.rentalDate | date: 'dd/MM/yyyy'}} </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="returnDate">
             <mat-header-cell *matHeaderCellDef> Fecha de devolucion </mat-header-cell>
-            <mat-cell *matCellDef="let rental"> {{rental.returnDate}} </mat-cell>
+            <mat-cell *matCellDef="let rental"> {{rental.returnDate | date: 'dd/MM/yyyy'}} </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="action">
@@ -80,9 +80,8 @@
     <mat-paginator (page)="loadPage($event)" [pageSizeOptions]="[5,10,20]" [pageIndex]="pageNumber" [pageSize]="pageSize" [length]="totalElements" showFirstLastButtons></mat-paginator>
 
     <div class="buttons">
-        <button mat-flat-button color="primary" (click)="createGame()">
+        <button mat-flat-button color="primary" (click)="createRental()">
             Nuevo préstamo
         </button>
     </div>
-</div>
 </div>
