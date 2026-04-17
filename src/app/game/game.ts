@@ -19,12 +19,6 @@ export class GameService {
         return this.http.get<Game[]>(this.composeFindUrl(title, categoryId));
     }
 
-    /*
-getGames(title?: string, categoryId?: number): Observable<Game[]> {
-        return of(GAME_DATA);
-    }
-    */
-
     saveGame(game: Game): Observable<void> {
         const { id } = game;
         const url = id ? `${this.baseUrl}/${id}` : this.baseUrl;

@@ -33,13 +33,15 @@
 
         <mat-form-field>
             <mat-label>Fecha de préstamo</mat-label>
-            <input matInput [matDatepicker]="picker" [(ngModel)]="rental.rentalDate" name="date">
-            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
-
-            <input matInput [matDatepicker]="picker" [(ngModel)]="rental.returnDate" name="date">
-            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
+            <input matInput [matDatepicker]="pickerRental" [(ngModel)]="rental.rentalDate" name="rentalDate">
+            <mat-datepicker-toggle matSuffix [for]="pickerRental"></mat-datepicker-toggle>
+            <mat-datepicker #pickerRental></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Fecha de devolución</mat-label>
+            <input matInput [matDatepicker]="pickerReturn" [(ngModel)]="rental.returnDate" name="returnDate">
+            <mat-datepicker-toggle matSuffix [for]="pickerReturn"></mat-datepicker-toggle>
+            <mat-datepicker #pickerReturn></mat-datepicker>
         </mat-form-field>
 
     </form>

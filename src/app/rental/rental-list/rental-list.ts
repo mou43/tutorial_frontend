@@ -102,11 +102,8 @@ export class RentalListComponent implements OnInit {
       this.filterClient != null ? this.filterClient.id : null;
 
     const rentalDate = this.filterDate != null
-      ? (typeof this.filterDate.format === 'function'
         ? this.filterDate.format('YYYY-MM-DD') // Moment
-        : this.filterDate.toISOString().split('T')[0] // Date
-      )
-      : null;
+        : null;
 
     this.rentalService.getRental(pageable, gameId, clientId, rentalDate).subscribe((data) => {
       this.dataSource.data = data.content;

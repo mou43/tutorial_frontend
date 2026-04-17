@@ -14,6 +14,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { GameItem } from './game-item/game-item';
+import { signal } from '@angular/core';
 
 @Component({
     selector: 'app-game-list',
@@ -27,14 +28,14 @@ import { GameItem } from './game-item/game-item';
         MatFormFieldModule,
         MatInputModule,
         MatSelectModule,
-        GameItem
+        GameItem,
     ],
     templateUrl: './game-list.html',
     styleUrl: './game-list.scss',
 })
 export class GameListComponent implements OnInit {
     categories: Category[];
-    games: Game[] = [];
+    games = signal<Game[]>([]);
     filterCategory: Category;
     filterTitle: string;
 
@@ -42,11 +43,18 @@ export class GameListComponent implements OnInit {
         private gameService: GameService,
         private categoryService: CategoryService,
         public dialog: MatDialog
-    ) {}
+    ) { }
+
+    private loadGames(title?: string, categoryId?: number) {
+        this.gameService
+            .getGames(title, categoryId)
+            .subscribe(games => this.games.set(games));
+    }
 
     ngOnInit(): void {
-        this.gameService.getGames().subscribe((games) => (this.games = games));
 
+        this.loadGames();
+        
         this.categoryService
             .getCategories()
             .subscribe((categories) => (this.categories = categories));
@@ -63,9 +71,9 @@ export class GameListComponent implements OnInit {
         const categoryId =
             this.filterCategory != null ? this.filterCategory.id : null;
 
-        this.gameService
-            .getGames(title, categoryId)
-            .subscribe((games) => (this.games = games));
+
+        this.loadGames(title, categoryId);
+
     }
 
     createGame() {
