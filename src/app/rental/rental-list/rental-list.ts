@@ -11,7 +11,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
 import { FormsModule } from '@angular/forms';
 import { Pageable } from '../../core/model/page/Pageable';
 import { RentalEdit } from '../rental-edit/rental-edit';
@@ -20,7 +19,7 @@ import { Game } from '../../game/model/game';
 import { Client } from '../../client/model/client';
 import { GameService } from '../../game/game';
 import { ClientService } from '../../client/client';
-
+import type { Moment } from 'moment';
 
 @Component({
   selector: 'app-rental-list',
@@ -34,18 +33,17 @@ import { ClientService } from '../../client/client';
     MatInputModule,
     MatSelectModule,
     MatDatepickerModule,
-    MatNativeDateModule,
     FormsModule
   ],
   templateUrl: './rental-list.html',
   styleUrl: './rental-list.scss',
 })
 export class RentalListComponent implements OnInit {
-  games: Game[];
-  clients: Client[];
-  filterGame: Game;
-  filterClient: Client;
-  filterDate: Date
+  games: Game[] = [];
+  clients: Client[] = [];
+  filterGame: Game = null;
+  filterClient: Client = null;
+  filterDate: Moment | null = null;
 
   pageNumber: number = 0;
   pageSize: number = 5;
@@ -64,7 +62,7 @@ export class RentalListComponent implements OnInit {
   ngOnInit(): void {
     this.gameService.getGames().subscribe((games) => (this.games = games));
     this.clientService.getClients().subscribe((clients) => (this.clients = clients));
-    
+
     this.loadPage();
   }
 
@@ -76,17 +74,8 @@ export class RentalListComponent implements OnInit {
   }
 
   onSearch(): void {
-    const gameId =
-    this.filterGame != null ? this.filterGame.id : null;
-
-    const clientId =
-    this.filterClient != null ? this.filterClient.id : null;
-
-    const inputDate =
-    this.filterDate != null ? this.filterDate.getDate : null;
-
-    this.rentalService.getRental(gameId, clientId, inputDate).subscribe((rentals) => (this.rentals = rentals));
-
+    this.pageNumber = 0;
+    this.loadPage();
   }
 
   loadPage(event?: PageEvent) {
@@ -106,12 +95,26 @@ export class RentalListComponent implements OnInit {
       pageable.pageNumber = event.pageIndex;
     }
 
-    this.rentalService.getRental(pageable).subscribe((data) => {
+    const gameId =
+      this.filterGame != null ? this.filterGame.id : null;
+
+    const clientId =
+      this.filterClient != null ? this.filterClient.id : null;
+
+    const rentalDate = this.filterDate != null
+      ? (typeof this.filterDate.format === 'function'
+        ? this.filterDate.format('YYYY-MM-DD') // Moment
+        : this.filterDate.toISOString().split('T')[0] // Date
+      )
+      : null;
+
+    this.rentalService.getRental(pageable, gameId, clientId, rentalDate).subscribe((data) => {
       this.dataSource.data = data.content;
       this.pageNumber = data.pageable.pageNumber;
       this.pageSize = data.pageable.pageSize;
       this.totalElements = data.totalElements;
     });
+
   }
 
   createRental() {
@@ -126,7 +129,7 @@ export class RentalListComponent implements OnInit {
 
   editRental(rental: Rental) {
     const dialogRef = this.dialog.open(RentalEdit, {
-      data: {rental: rental},
+      data: { rental: rental },
     });
 
     dialogRef.afterClosed().subscribe((result) => {

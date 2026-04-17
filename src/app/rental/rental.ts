@@ -13,8 +13,13 @@ export class RentalService {
 
   private baseUrl = 'http://localhost:8080/rental';
 
-  getRental(pageable: Pageable): Observable<RentalPage> {
-    return this.http.post<RentalPage>(this.baseUrl, { pageable: pageable });
+  getRental(pageable: Pageable, gameId?: number, clientId?: number, rentalDate?: string): Observable<RentalPage> {
+    return this.http.post<RentalPage>(this.baseUrl, {
+      pageable: pageable,
+      gameId: gameId ?? null,
+      clientId: clientId ?? null,
+      rentalDate: rentalDate ?? null
+    });
   }
 
   saveRental(rental: Rental): Observable<Rental> {
